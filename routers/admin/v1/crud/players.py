@@ -18,10 +18,6 @@ def get_player_by_id(db: Session, player_id: str):
 def create_player(db: Session, player: schemas.PlayerBase):
 
     player_id = generate_id()
-    db_player = get_player_by_id(db=db, player_id=player_id)
-    
-    if db_player:
-        raise HTTPException(status_code=400, detail="player already exist")
 
     db_user = PlayerModel(
         id=player_id, first_name=player.first_name, last_name=player.last_name

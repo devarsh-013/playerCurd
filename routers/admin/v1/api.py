@@ -5,7 +5,7 @@ import routers.admin.v1.schemas as schemas
 from dependencies import get_db
 from sqlalchemy.orm import Session
 
-router = APIRouter(prefix="/api")
+router = APIRouter()
 
 import routers.admin.v1.crud.players as players
 
@@ -28,17 +28,19 @@ def get_player_by_id(player_id:str = Path(default=None ,min_length=36,max_length
     db_player = players.get_player(db=db,player_id=player_id)
 
     return db_player
-
+#update function to update first_name and last_name
 @router.put("/player/{player_id}")
 def update_player(
-    player_id: str, player: schemas.PlayerBase, db: Session = Depends(get_db)
+    player: schemas.PlayerBase, db: Session = Depends(get_db),
+    player_id: str = Path(default = None,min_length=36,max_length=36), 
+    
 ):
 
     return players.update_player(db=db, player_id=player_id, player=player)
 
 #A delete request for deleting a player from its id
 @router.delete("/player/{player_id}")
-def delete_player(player_id: str, db: Session = Depends(get_db)):
+def delete_player(player_id: str = Path(default = None, min_length=36, max_length=36), db: Session = Depends(get_db)):
 
     players.delete_player(db, player_id=player_id)
     return {"message:player has been deleted"}
