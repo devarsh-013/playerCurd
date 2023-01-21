@@ -18,7 +18,7 @@ def create_player(player: schemas.PlayerBase, db: Session = Depends(get_db)):
 
 #A get request for getting all the players with skip and limit arguments
 @router.get("/player",response_model=List[schemas.PlayerShow])
-def get_all_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def get_all_players(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     all_players = players.get_all_players(db=db, skip=skip, limit=limit)
     return all_players
 
