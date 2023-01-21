@@ -8,7 +8,7 @@ from datetime import datetime
 class PlayerModel(Base):
     __tablename__ = 'player'
 
-    id = Column(String(10), primary_key=True)
+    id = Column(String(50), primary_key=True)
     first_name = Column(String(50))
     last_name = Column(String(50))
     is_deleted = Column(Boolean, default=False)

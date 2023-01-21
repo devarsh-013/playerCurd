@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import models
 from database import engine
-from routers import api
+from routers.admin.v1 import api
 # creates the db 
 models.Base.metadata.create_all(bind= engine)
 

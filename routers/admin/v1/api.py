@@ -1,53 +1,44 @@
 from typing import List
-
-from fastapi import APIRouter, Depends, HTTPException, status, Response
-import schemas
+from fastapi import APIRouter, Depends, Path
+import routers.admin.v1.schemas as schemas
 
 from dependencies import get_db
 from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api")
 
-import routers.service as service
+import routers.admin.v1.crud.players as players
 
 # A post request for creating a player
-@router.post("/player/")
-def create_player(player: schemas.Player, db: Session = Depends(get_db)):
-    db_player = service.get_player_by_id(db=db, player_id=player.id)
-    if db_player:
-        raise HTTPException(status_code=400, detail="player already exist")
+@router.post("/player")
+def create_player(player: schemas.PlayerBase, db: Session = Depends(get_db)):
 
-    return service.create_player(db=db, player=player)
+
+    return players.create_player(db=db, player=player)
 
 #A get request for getting all the players with skip and limit arguments
-@router.get("/player/")
-def read_player(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    player = service.get_player(db=db, skip=skip, limit=limit)
-    return player
+@router.get("/player",response_model=List[schemas.PlayerShow])
+def get_all_players(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    all_players = players.get_all_players(db=db, skip=skip, limit=limit)
+    return all_players
 
 #A get request to get a player by an id
-@router.get("/player/{player_id}")
-def get_player_by_id(player_id:str, db:Session = Depends(get_db)):
-    db_player = service.get_player_by_id(db=db,player_id=player_id)
-    if db_player is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="player not found."
-        )
+@router.get("/player/{player_id}" ,response_model= schemas.PlayerShow)
+def get_player_by_id(player_id:str = Path(default=None ,min_length=36,max_length=36), db:Session = Depends(get_db)):
+    db_player = players.get_player(db=db,player_id=player_id)
 
     return db_player
 
+@router.put("/player/{player_id}")
+def update_player(
+    player_id: str, player: schemas.PlayerBase, db: Session = Depends(get_db)
+):
+
+    return players.update_player(db=db, player_id=player_id, player=player)
 
 #A delete request for deleting a player from its id
 @router.delete("/player/{player_id}")
 def delete_player(player_id: str, db: Session = Depends(get_db)):
 
-    service.delete_player(db, player_id=player_id)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-@router.put("/player/{player_id}")
-def update_player(
-    player_id: str, player: schemas.PlayerUpdate, db: Session = Depends(get_db)
-):
-
-    return service.update_player(db=db, player_id=player_id, player=player)
+    players.delete_player(db, player_id=player_id)
+    return {"message:player has been deleted"}
