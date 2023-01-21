@@ -1,9 +1,10 @@
 from datetime import datetime
 from models import PlayerModel
 from fastapi import HTTPException, status
-import schemas
+import routers.admin.v1.schemas as schemas
 from sqlalchemy.orm import Session
 from sqlalchemy import text
+from libs.utils import now
 
 # function which gets player by id
 def get_player_by_id(db: Session, player_id: str):
@@ -61,7 +62,7 @@ def update_player(db: Session, player_id: str, player: schemas.PlayerUpdate):
 
     db_player.first_name = player.first_name
     db_player.last_name = player.last_name
-    db_player.updated_at = datetime.now
+    db_player.updated_at = now()
     db.commit()
     db.refresh(db_player)
     return db_player
