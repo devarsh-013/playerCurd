@@ -55,7 +55,8 @@ def verify_token(db: Session, token: str):
             ST = jwt.JWT(key=key, jwt=ET.claims)
             claims = ST.claims
             claims = json.loads(claims)
-            db_player = get_player_by_id(db, id=claims['id'])
+            print(claims)
+            db_player = get_player_by_id(db, player_id=claims['id'])
         except ValueError as e:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail='Invalid token')
