@@ -11,6 +11,8 @@ class PlayerModel(Base):
     id = Column(String(50), primary_key=True)
     first_name = Column(String(50))
     last_name = Column(String(50))
+    email = Column(String(50))
+    password = Column(String(255))
     is_deleted = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)

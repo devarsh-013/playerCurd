@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, Path
+from fastapi import APIRouter, Depends, Path, Header
 import routers.admin.v1.schemas as schemas
 
 from dependencies import get_db
@@ -9,6 +9,14 @@ router = APIRouter()
 
 import routers.admin.v1.crud.players as players
 
+@router.post('/login', response_model=schemas.PlayerLoginResponse)
+
+def login_player(
+    player: schemas.PlayerLogin,
+    db: Session = Depends(get_db)
+):
+    db_user = players.sign_in(db, player)
+    return db_user
 # A post request for creating a player
 @router.post("/player")
 def create_player(player: schemas.PlayerBase, db: Session = Depends(get_db)):
@@ -17,10 +25,14 @@ def create_player(player: schemas.PlayerBase, db: Session = Depends(get_db)):
     return players.create_player(db=db, player=player)
 
 #A get request for getting all the players with skip and limit arguments
-@router.get("/player",response_model=List[schemas.PlayerShow])
-def get_all_players(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    all_players = players.get_all_players(db=db, skip=skip, limit=limit)
-    return all_players
+@router.get("/player"#,response_model=List[schemas.PlayerShow]
+            )
+def get_all_players(skip: int = 0, limit: int = 10, token:str = Header(None),db: Session = Depends(get_db)):
+
+    return {'token': token}
+    # players.verify_token(db=db,token=token)
+    # all_players = players.get_all_players(db=db, skip=skip, limit=limit)
+    # return all_players
 
 #A get request to get a player by an id
 @router.get("/player/{player_id}" ,response_model= schemas.PlayerShow)
